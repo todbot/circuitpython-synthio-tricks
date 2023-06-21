@@ -23,12 +23,19 @@ class Arpy:
         self.note_off_handler = lambda note: print("note off standin", note)
         self.note_played = None
         self.last_beat_time = time.monotonic()
+        self.trans_steps = 0
+        self.trans_distance = 12
+        self.trans_pos = 0
 
     def set_bpm(self, bpm):
         self.bpm = bpm
         self.per_beat_time = 60 / bpm / self.steps_per_beat
         self.note_duration = self.gate_percent * self.per_beat_time
-        print("per_beat_time:", self.per_beat_time)
+        #print("per_beat_time:", self.per_beat_time)
+
+    def set_transpose(self, distance=12, steps=0):
+        self.trans_distance = distance
+        self.trans_steps = steps
 
     def on(self):
         self.enabled = True
@@ -41,7 +48,12 @@ class Arpy:
         if now - self.last_beat_time > self.per_beat_time:
             self.last_beat_time = now
             arp = self.arps[self.arp_id]
-            self.note_played = self.root_note + arp[self.arp_pos]
+
+            trans_amount = self.trans_distance * self.trans_pos
+            if self.arp_pos == 0:  # only make musical changes at top of arp
+                self.trans_pos = (self.trans_pos + 1) % (self.trans_steps+1)
+
+            self.note_played = self.root_note + arp[self.arp_pos] + trans_amount
             self.note_on_handler( self.note_played )
             self.arp_pos = (self.arp_pos+1) % len(arp)
 
