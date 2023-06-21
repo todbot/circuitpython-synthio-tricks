@@ -1,0 +1,10 @@
+
+synthio-tricks examples
+=======================
+
+
+- [eighties_dystopia](eighties_dystopia/code.py) - A swirling ominous wub that evolves over time
+
+<!-- - [eighties_chase](eighties_chase/code.py) - You're being chased a by a killer robot, run! -->
+
+- [eighties_arp](eighties_arp/code.py) - An arpeggio explorer for non-musicians and
