@@ -1,6 +1,6 @@
 
 
-Synthio Tricks
+CircuitPython Synthio Tricks
 ===============
 
 <!--ts-->
