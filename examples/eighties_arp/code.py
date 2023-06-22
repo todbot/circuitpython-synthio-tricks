@@ -2,7 +2,8 @@
 # 19 Jun 2023 - @todbot / Tod Kurt
 #
 import time, random
-import board, analogio, audiopwmio, audiomixer, synthio
+import board, analogio, keypad
+import audiopwmio, audiomixer, synthio
 import ulab.numpy as np
 from arpy import Arpy
 
@@ -12,6 +13,7 @@ lpf_resonance = 1.5  # filter q
 
 knobA = analogio.AnalogIn(board.A0)
 knobB = analogio.AnalogIn(board.A1)
+keys = keypad.Keys( (board.SDA, board.SCL), value_when_pressed=False )
 
 audio = audiopwmio.PWMAudioOut(board.RX)  # RX pin on QTPY RP2040
 #audio = audiobusio.I2SOut(bit_clock=board.MOSI, word_select=board.MISO, data=board.SCK)
@@ -52,8 +54,8 @@ arpy.note_off_handler = note_off
 arpy.on()
 
 arpy.root_note = 37
-arpy.arp_id = 'suspended4th'
-#arpy.arp_id = 'root'
+arpy.set_arp( 'suspended4th' )
+#arpy.set_arp('root')
 arpy.set_bpm(110)
 arpy.set_transpose(distance=12, steps=1)
 
@@ -62,6 +64,16 @@ knobAval = knobA.value
 knobBval = knobB.value
 
 while True:
+
+    key = keys.events.get()
+    if key and key.pressed:
+        if key.key_number==0:  # left button
+            arpy.next_arp()
+        if key.key_number==1:  # right button
+            steps = (arpy.trans_steps + 1) % 3;
+            print("steps",steps)
+            arpy.set_transpose(steps=steps)
+
     # filter noisy adc
     knobAval = knobAval * knobfilter + (1-knobfilter) * knobA.value
     knobBval = knobBval * knobfilter + (1-knobfilter) * knobB.value

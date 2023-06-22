@@ -4,24 +4,25 @@ class Arpy:
     def __init__(self):
         self.enabled = False
         self.root_note = 48
-        self.gate_percent = 0.75  # percentage
+        self.gate_percent = 0.30  # percentage
         self.steps_per_beat = 2  # eighth notes
         self.set_bpm(100)
-        self.arps = {
-            'major'        : (0, 4, 7, 12),
-            'minor7th'     : (0, 3, 7, 10),
-            'diminished'   : (0, 3, 6, 3),
-            'suspended4th' : (0, 5, 7, 12),
-            'octaves'      : (0, 12, 0, -12),
-            'octaves2'     : (0, 12, 24, -12),
-            'octaves3'     : (0, -12, -12, 0),
-            'root'         : (0, 0, 0, 0),
-        }
-        self.arp_id = 'major'
+        self.arps = [
+            ('major'        , (0, 4, 7, 12) ),    # 0
+            ('minor7th'     , (0, 3, 7, 10) ),    # 1
+            ('diminished'   , (0, 3, 6, 3)) ,     # 2
+            ('suspended4th' , (0, 5, 7, 12) ),    # 3
+            ('octaves'      , (0, 12, 0, -12) ),  # 4
+            ('octaves2'     , (0, 12, 24, -12) ), # 5
+            ('octaves3'     , (0, -12, -12, 0) ), # 6
+            ('root'         , (0, 0, 0, 0) ),     # 7
+        ]
+        self.arp_id = 0  # which one of the arps we're currently using,
+        self.arp_user = None  # list of notes if user adds arp  # FIXME
         self.arp_pos = 0
         self.note_on_handler = lambda note,: print("note on standin",note)
         self.note_off_handler = lambda note: print("note off standin", note)
-        self.note_played = None
+        self.note_played = None  # the note that was played (for note off)
         self.last_beat_time = time.monotonic()
         self.trans_steps = 0
         self.trans_distance = 12
@@ -41,13 +42,25 @@ class Arpy:
         self.enabled = True
         self.last_beat_time = time.monotonic() - self.per_beat_time
 
+    def set_arp(self,arp_id_or_str):
+        if type(arp_id_or_str) is str:
+            self.arp_id = [name for (name,arp) in self.arps].index(arp_id_or_str)
+        else:
+            self.arp_id = arp_id_or_str
+
+    def play(self, arp_notes):
+        self.arp_user = arp_notes  # FIXME
+
+    def next_arp(self):
+        self.arp_id = (self.arp_id + 1) % len(self.arps)
+
     def update(self):
         if not self.enabled: return
         now = time.monotonic()
 
         if now - self.last_beat_time > self.per_beat_time:
             self.last_beat_time = now
-            arp = self.arps[self.arp_id]
+            arp = self.arps[self.arp_id][1]
 
             trans_amount = self.trans_distance * self.trans_pos
             if self.arp_pos == 0:  # only make musical changes at top of arp
