@@ -1,10 +1,17 @@
-# synthio_eighties_arp.py --
-# 19 Jun 2023 - @todbot / Tod Kurt
+# eighties_arp_synthio.py --
+# 20 Jun 2023 - @todbot / Tod Kurt
 #
+# UI is:
+#  knobA - adjusts root note
+#  knobB - adjusts BPM
+#  buttonA - changes arp pattern
+#  buttonB - changes how many iterations up for pattern
+
 import time, random
 import board, analogio, keypad
 import audiopwmio, audiomixer, synthio
 import ulab.numpy as np
+import neopixel, rainbowio  # circup install neopixel
 from arpy import Arpy
 
 num_voices = 3       # how many voices for each note
@@ -14,6 +21,7 @@ lpf_resonance = 1.5  # filter q
 knobA = analogio.AnalogIn(board.A0)
 knobB = analogio.AnalogIn(board.A1)
 keys = keypad.Keys( (board.SDA, board.SCL), value_when_pressed=False )
+led = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.1)
 
 audio = audiopwmio.PWMAudioOut(board.RX)  # RX pin on QTPY RP2040
 #audio = audiobusio.I2SOut(bit_clock=board.MOSI, word_select=board.MISO, data=board.SCK)
@@ -30,8 +38,10 @@ amp_env = synthio.Envelope(attack_level=1, sustain_level=1, release_time=0.5)
 
 voices=[]  # holds our currently sounding voices ('Notes' in synthio speak)
 
+# called by arpy to turn on a note
 def note_on(n):
-    print("my note on ", n)
+    print("my note on ", n )
+    led.fill(rainbowio.colorwheel( n % 12 * 20  ))
     fo = synthio.midi_to_hz(n)
     voices.clear()  # delete any old voices
     for i in range(num_voices):
@@ -41,8 +51,10 @@ def note_on(n):
         voices.append( synthio.Note( frequency=f, filter=lpf, envelope=amp_env, waveform=wave_saw) )
     synth.press(voices)
 
+# called by arpy to turn off a note
 def note_off(n):
     print("my note off", n)
+    led.fill(0)
     synth.release(voices)
 
 # simple range mapper, like Arduino map()
@@ -55,9 +67,8 @@ arpy.on()
 
 arpy.root_note = 37
 arpy.set_arp( 'suspended4th' )
-#arpy.set_arp('root')
 arpy.set_bpm(110)
-arpy.set_transpose(distance=12, steps=1)
+arpy.set_transpose(distance=12, steps=0)
 
 knobfilter = 0.5
 knobAval = knobA.value
