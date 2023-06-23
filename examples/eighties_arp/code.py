@@ -4,7 +4,7 @@
 #  - arp arp arp
 #  - two pots, two buttons, no keys!
 #  - no musical knowledge needed, just plug it, start twisting knobs
-#  - video demo:
+#  - video demo: https://www.youtube.com/watch?v=G7QR7wDKp8g
 #
 # UI is:
 #  knobA - adjusts root note      (QTPy A0)
@@ -17,6 +17,7 @@
 # - QT Py RP2040 or similar
 # - QTPy RX pin is audio out, going through RC filter (1k + 100nF) to TRS jack
 #
+
 
 import time, random
 import board, analogio, keypad
