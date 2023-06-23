@@ -1,11 +1,22 @@
-# eighties_arp_synthio.py --
+# eighties_arp_synthio.py -- playing with arpeggios, testing my Arpy class
 # 20 Jun 2023 - @todbot / Tod Kurt
 #
+#  - arp arp arp
+#  - two pots, two buttons, no keys!
+#  - no musical knowledge needed, just plug it, start twisting knobs
+#  - video demo:
+#
 # UI is:
-#  knobA - adjusts root note
-#  knobB - adjusts BPM
-#  buttonA - changes arp pattern
-#  buttonB - changes how many iterations up for pattern
+#  knobA - adjusts root note      (QTPy A0)
+#  knobB - adjusts BPM            (QTPY A1)
+#  buttonA - changes arp pattern  (QTPy SDA)
+#  buttonB - changes num iters up for pattern (QTPy SCL)
+#
+# Circuit:
+# - See: "eighties_arp_bb.png" wiring
+# - QT Py RP2040 or similar
+# - QTPy RX pin is audio out, going through RC filter (1k + 100nF) to TRS jack
+#
 
 import time, random
 import board, analogio, keypad
@@ -24,7 +35,6 @@ keys = keypad.Keys( (board.SDA, board.SCL), value_when_pressed=False )
 led = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.1)
 
 audio = audiopwmio.PWMAudioOut(board.RX)  # RX pin on QTPY RP2040
-#audio = audiobusio.I2SOut(bit_clock=board.MOSI, word_select=board.MISO, data=board.SCK)
 
 mixer = audiomixer.Mixer(channel_count=1, sample_rate=28000, buffer_size=2048)
 synth = synthio.Synthesizer(channel_count=1, sample_rate=28000)
@@ -70,7 +80,7 @@ arpy.set_arp( 'suspended4th' )
 arpy.set_bpm(110)
 arpy.set_transpose(distance=12, steps=0)
 
-knobfilter = 0.5
+knobfilter = 0.75
 knobAval = knobA.value
 knobBval = knobB.value
 

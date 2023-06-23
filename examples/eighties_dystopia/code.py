@@ -1,9 +1,25 @@
 # synthio_eighties_dystopia.py --
 # 19 Jun 2023 - @todbot / Tod Kurt
+# - A swirling ominous wub that evolves over time
+# - Made for QTPy RP2040 but will work on any synthio-capable board
+# - No user input, just wallow in the sound
+# - video demo: https://youtu.be/EcDqYh-DzVA
 #
+# Circuit:
+# - See: "eighties_arp_bb.png" wiring
+# - QT Py RP2040 or similar
+# - QTPy RX pin is audio out, going through RC filter (1k + 100nF) to TRS jack
+#
+# Code:
+#  - Five detuned oscillators are randomly detuned very second or so
+#  - A low-pass filter is slowly modulated over the filters
+#  - The filter modulation rate also changes randomly every second (also reflected on neopixel)
+#  - Every 15 seconds a new note is randomly chosen from the allowed note list
+
 import time, random
 import board, audiopwmio, audiomixer, synthio
 import ulab.numpy as np
+import neopixel, rainbowio   # circup install neopixel
 
 notes = (33, 34, 31) # possible notes to play MIDI A1, A1#, G1
 note_duration = 15   # how long each note plays for
@@ -11,17 +27,19 @@ num_voices = 5       # how many voices for each note
 lpf_basef = 500      # filter lowest frequency
 lpf_resonance = 1.5  # filter q
 
+led = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.1)
+
 audio = audiopwmio.PWMAudioOut(board.RX)  # RX pin on QTPY RP2040
 #audio = audiobusio.I2SOut(bit_clock=board.MOSI, word_select=board.MISO, data=board.SCK)
 
-mixer = audiomixer.Mixer(channel_count=1, sample_rate=22050, buffer_size=2048)
-synth = synthio.Synthesizer(channel_count=1, sample_rate=22050)
+mixer = audiomixer.Mixer(channel_count=1, sample_rate=28000, buffer_size=2048)
+synth = synthio.Synthesizer(channel_count=1, sample_rate=28000)
 audio.play(mixer)
 mixer.voice[0].play(synth)
 mixer.voice[0].level = 0.8
 
-# our oscillator waveform, a 512 sample downward saw wave going from 25k to -25k
-wave_saw = np.linspace(25000, -25000, num=512, dtype=np.int16)  # max is +/-32k but gives us headroom
+# our oscillator waveform, a 512 sample downward saw wave going from +/-30k
+wave_saw = np.linspace(30000, -30000, num=512, dtype=np.int16)  # max is +/-32k but gives us headroom
 amp_env = synthio.Envelope(attack_level=1, sustain_level=1)
 
 # set up the voices (aka "Notes" in synthio-speak) w/ initial values
@@ -55,6 +73,8 @@ while True:
     # continuosly update filter, no global filter, so update each voice's filter
     for v in voices:
         v.filter = synth.low_pass_filter( lpf_basef + lfo_filtermod.value, lpf_resonance )
+
+    led.fill( rainbowio.colorwheel( lfo_filtermod.value/20 ) )  # show filtermod moving
 
     if time.monotonic() - last_filtermod_time > 1:
         last_filtermod_time = time.monotonic()
