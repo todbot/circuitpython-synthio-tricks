@@ -1,3 +1,7 @@
+# derpnote2_synthio.py -- Sort of like THX DeepNote
+# 20 Jun 2023 - @todbot / Tod Kurt
+# a port of "derpnote2" in https://github.com/todbot/mozzi_experiments
+#
 import board, time, audiopwmio, synthio, random
 import ulab.numpy as np
 import audiobusio, audiomixer
