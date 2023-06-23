@@ -4,6 +4,9 @@ synthio-tricks examples
 
 
 - [eighties_dystopia](eighties_dystopia/code.py) - A swirling ominous wub that evolves over time
+  - video demo: [eighties dystopia in synthio](https://www.youtube.com/watch?v=EcDqYh-DzVA)
+
+
 
 <!-- - [eighties_chase](eighties_chase/code.py) - You're being chased a by a killer robot, run! -->
 
