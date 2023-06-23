@@ -5,8 +5,7 @@ class Arpy:
         self.enabled = False
         self.root_note = 48
         self.gate_percent = 0.30  # percentage
-        self.steps_per_beat = 2  # eighth notes
-        self.set_bpm(100)
+        self.set_bpm(bpm=100, steps_per_beat=2) # 100 bpm 8th notes
         self.arps = [
             ('major'        , (0, 4, 7, 12) ),    # 0
             ('minor7th'     , (0, 3, 7, 10) ),    # 1
@@ -28,11 +27,13 @@ class Arpy:
         self.trans_distance = 12
         self.trans_pos = 0
 
-    def set_bpm(self, bpm):
+    def set_bpm(self, bpm, steps_per_beat=None):
         self.bpm = bpm
+        if steps_per_beat:
+            self.steps_per_beat = steps_per_beat
         self.per_beat_time = 60 / bpm / self.steps_per_beat
         self.note_duration = self.gate_percent * self.per_beat_time
-        #print("per_beat_time:", self.per_beat_time)
+        #print("per_beat_time:", self.per_beat_time, self.steps_per_beat)
 
     def set_transpose(self, distance=12, steps=0):
         self.trans_distance = distance
@@ -48,6 +49,9 @@ class Arpy:
         else:
             self.arp_id = arp_id_or_str
 
+    def arp_name(self):
+        return self.arps[self.arp_id][0]
+
     def play(self, arp_notes):
         self.arp_user = arp_notes  # FIXME
 
@@ -58,7 +62,7 @@ class Arpy:
         if not self.enabled: return
         now = time.monotonic()
 
-        if now - self.last_beat_time > self.per_beat_time:
+        if now - self.last_beat_time >= self.per_beat_time:
             self.last_beat_time = now
             arp = self.arps[self.arp_id][1]
 

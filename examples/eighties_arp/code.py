@@ -43,15 +43,15 @@ audio.play(mixer)
 mixer.voice[0].play(synth)
 mixer.voice[0].level = 0.8
 
-# our oscillator waveform, a 512 sample downward saw wave going from 25k to -25k
-wave_saw = np.linspace(25000, -25000, num=512, dtype=np.int16)  # max is +/-32k but gives us headroom
+# our oscillator waveform, a 512 sample downward saw wave going from +/-30k
+wave_saw = np.linspace(30000, -30000, num=512, dtype=np.int16)  # max is +/-32k but gives us headroom
 amp_env = synthio.Envelope(attack_level=1, sustain_level=1, release_time=0.5)
 
 voices=[]  # holds our currently sounding voices ('Notes' in synthio speak)
 
 # called by arpy to turn on a note
 def note_on(n):
-    print("my note on ", n )
+    print("  note on ", n )
     led.fill(rainbowio.colorwheel( n % 12 * 20  ))
     fo = synthio.midi_to_hz(n)
     voices.clear()  # delete any old voices
@@ -64,7 +64,7 @@ def note_on(n):
 
 # called by arpy to turn off a note
 def note_off(n):
-    print("my note off", n)
+    print("  note off", n)
     led.fill(0)
     synth.release(voices)
 
@@ -77,8 +77,9 @@ arpy.note_off_handler = note_off
 arpy.on()
 
 arpy.root_note = 37
-arpy.set_arp( 'suspended4th' )
-arpy.set_bpm(110)
+arpy.set_arp('suspended4th')
+
+arpy.set_bpm( bpm=110, steps_per_beat=4 ) # 110 bpm 16th notes
 arpy.set_transpose(distance=12, steps=0)
 
 knobfilter = 0.75
@@ -89,9 +90,10 @@ while True:
 
     key = keys.events.get()
     if key and key.pressed:
-        if key.key_number==0:  # left button
+        if key.key_number==0:  # left button changes arp played
             arpy.next_arp()
-        if key.key_number==1:  # right button
+            print(arpy.arp_name())
+        if key.key_number==1:  # right button changes arp up iterations
             steps = (arpy.trans_steps + 1) % 3;
             print("steps",steps)
             arpy.set_transpose(steps=steps)
@@ -100,6 +102,9 @@ while True:
     knobAval = knobAval * knobfilter + (1-knobfilter) * knobA.value
     knobBval = knobBval * knobfilter + (1-knobfilter) * knobB.value
 
+    # map knobA to root note
     arpy.root_note = int(map_range( knobAval, 0,65535, 24, 72) )
+    # map knobB to bpm
     arpy.set_bpm( map_range(knobBval, 0,65535, 40, 180 ) )
+
     arpy.update()
