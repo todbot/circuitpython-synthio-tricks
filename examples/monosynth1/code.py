@@ -2,7 +2,7 @@
 # 22 Jun 2023 - @todbot / Tod Kurt
 # part of https://github.com/todbot/circuitpython-synthio-tricks
 #
-# Responds to these USB MIDI messages:
+# Responds to these MIDI messages (over both USB or Serial MIDI):
 # - note on / off
 # - filter cutoff      -- CC 74
 # - filter resonance   -- CC 71
@@ -10,9 +10,12 @@
 # - osc detune amount  -- CC 93
 # - pitch vibrato      -- CC 1 (modwheel)
 #
+# Pins used:
+# - board.RX - MIDI input  (needs optoisolator input)
+# - board.SCK - Audio PWM output (needs RC filter output)
 
 import time,random
-import board
+import board, busio
 import audiomixer, audiopwmio
 import synthio
 import ulab.numpy as np
@@ -24,6 +27,7 @@ from adafruit_midi.note_off import NoteOff
 from adafruit_midi.control_change import ControlChange
 import neopixel   # circup install neopixel
 
+midi_channel=1         # which midi channel to receive on
 oscs_per_note = 3      # how many oscillators for each note
 osc_detune = 0.001     # how much to detune oscillators for phatness
 filter_freq_lo = 100   # filter lowest freq
@@ -34,15 +38,17 @@ vibrato_lfo_hi = 0.1   # vibrato amount when modwheel is maxxed out
 vibrato_rate = 5       # vibrato frequency
 
 led = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2)
-midi = adafruit_midi.MIDI(midi_in=usb_midi.ports[0], in_channel=0 )
+uart = busio.UART(rx=board.RX, timeout=0.001, baudrate=31250)
+midi_usb = adafruit_midi.MIDI(midi_in=usb_midi.ports[0], in_channel=midi_channel-1)
+midi_uart = adafruit_midi.MIDI(midi_in=uart, in_channel=midi_channel-1)
 
 # set up the audio system, mixer, and synth
-audio = audiopwmio.PWMAudioOut(board.RX)  # RX pin on QTPY RP2040
+audio = audiopwmio.PWMAudioOut(board.SCK)  # SCK pin on QTPY RP2040
 mixer = audiomixer.Mixer(channel_count=1, sample_rate=28000, buffer_size=2048)
 synth = synthio.Synthesizer(channel_count=1, sample_rate=28000)
 audio.play(mixer)
 mixer.voice[0].play(synth)
-mixer.voice[0].level = 0.75
+mixer.voice[0].level = 0.75  # cut the volume a bit so doesn't distort
 
 # our oscillator waveform, a 512 sample downward saw wave going from +/-28k
 wave_saw = np.linspace(28000, -28000, num=512, dtype=np.int16)  # max is +/-32k but gives us headroom
@@ -78,8 +84,7 @@ def note_off(notenum,vel):
     synth.release(oscs)
     oscs.clear()
 
-
-print("monosynth1 ready, listening to incoming USB MIDI")
+print("monosynth1 ready, listening to incoming USB and Serial MIDI")
 
 while True:
 
@@ -87,7 +92,7 @@ while True:
     for osc in oscs:
         osc.filter = synth.low_pass_filter( filter_freq, filter_res )
 
-    msg = midi.receive()
+    msg = midi_uart.receive() or midi_usb.receive()
     if isinstance(msg, NoteOn) and msg.velocity != 0:
         print("noteOn: ", msg.note, "vel=", msg.velocity)
         led.fill(0xff00ff)
