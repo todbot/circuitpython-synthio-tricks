@@ -217,6 +217,12 @@ while True:
   # ... as before
 ```
 
+For wiring up a serial MIDI, you should check out
+[MIDI In for 3.3V Microcontrollers](https://diyelectromusic.wordpress.com/2021/02/15/midi-in-for-3-3v-microcontrollers/) page by diyelectromusic.  You can also try out
+[this 6N138-based circuit](./imgs/monosynth1_bb.png)
+I use for my [monosynth1 demo](https://www.youtube.com/watch?v=S1-TDjxE3Qs)
+
+
 ### Using AudioMixer for adjustable volume & fewer glitches
 
 Stick an AudioMixer in between `audio` and `synth` and we get three benefits:
