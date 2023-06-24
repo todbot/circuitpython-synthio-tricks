@@ -38,8 +38,8 @@ vibrato_lfo_hi = 0.1   # vibrato amount when modwheel is maxxed out
 vibrato_rate = 5       # vibrato frequency
 
 led = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2)
-uart = busio.UART(rx=board.RX, timeout=0.001, baudrate=31250)
-midi_usb = adafruit_midi.MIDI(midi_in=usb_midi.ports[0], in_channel=midi_channel-1)
+uart = busio.UART(rx=board.RX, baudrate=31250, timeout=0.001 )
+midi_usb  = adafruit_midi.MIDI(midi_in=usb_midi.ports[0], in_channel=midi_channel-1)
 midi_uart = adafruit_midi.MIDI(midi_in=uart, in_channel=midi_channel-1)
 
 # set up the audio system, mixer, and synth
@@ -93,6 +93,7 @@ while True:
         osc.filter = synth.low_pass_filter( filter_freq, filter_res )
 
     msg = midi_uart.receive() or midi_usb.receive()
+
     if isinstance(msg, NoteOn) and msg.velocity != 0:
         print("noteOn: ", msg.note, "vel=", msg.velocity)
         led.fill(0xff00ff)
