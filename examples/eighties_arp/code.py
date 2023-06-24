@@ -4,7 +4,7 @@
 #  - arp arp arp
 #  - two pots, two buttons, no keys!
 #  - no musical knowledge needed, just plug it, start twisting knobs
-#  - video demo: https://www.youtube.com/watch?v=G7QR7wDKp8g
+#  - video demo: https://www.youtube.com/watch?v=noj92Ae0IQI
 #
 # UI is:
 #  knobA - adjusts root note      (QTPy A0)
