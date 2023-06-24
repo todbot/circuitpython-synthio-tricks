@@ -210,7 +210,7 @@ The same as above, but replace the `usb_midi` with a `busio.UART`
 ```py
 # ... as before
 import busio
-uart = busio.UART(tx=board.TX, rx=board.RX, timeout=0.001)
+uart = busio.UART(tx=board.TX, rx=board.RX, baudrate=31250, timeout=0.001)
 midi = adafruit_midi.MIDI(midi_in=uart, in_channel=0 )
 while True:
   msg = midi.receive()
