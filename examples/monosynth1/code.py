@@ -1,6 +1,7 @@
 # monosynth1_synthio.py -- partial synthio port of 'monosynth1' from mozzi_experiments
 # 22 Jun 2023 - @todbot / Tod Kurt
 # part of https://github.com/todbot/circuitpython-synthio-tricks
+# video demo: https://youtu.be/S1-TDjxE3Qs
 #
 # Responds to these MIDI messages (over both USB or Serial MIDI):
 # - note on / off
