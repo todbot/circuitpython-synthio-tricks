@@ -393,7 +393,7 @@ while True:
 If you run this with the [Mu plotter](https://codewith.mu/en/tutorials/1.2/plotter)
 you'll see all three LFOs, and you can see how the "n" LFO's rate is being changed by the "m" LFO.
 
-<img src="./imgs/syntho_lfo_demo1.png" width=500>
+<img src="./imgs/synthio_lfo_demo1.png" width=500>
 
 
 #### Vibrato: pitch bend with LFO
