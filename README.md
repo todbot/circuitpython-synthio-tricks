@@ -5,6 +5,8 @@ CircuitPython Synthio Tricks
 
 <!--ts-->
    * [What is synthio?](#what-is-synthio)
+      * [How synthio differs from other synthesis systems](#how-synthio-differs-from-other-synthesis-systems)
+      * [Some examples](#some-examples)
    * [Getting started](#getting-started)
       * [Which boards does synthio work on?](#which-boards-does-synthio-work-on)
       * [Audio out circuits](#audio-out-circuits)
@@ -30,11 +32,7 @@ CircuitPython Synthio Tricks
       * [Using LFO values in your own code](#using-lfo-values-in-your-own-code)
       * [Using synthio.Math with synthio.LFO](#using-synthiomath-with-synthiolfo)
       * [Drum synthesis](#drum-synthesis)
-   * [Example "Patches"](#example-patches)
-      * [Arcade sounds](#arcade-sounds)
-      * [Bass synth arpeggiator](#bass-synth-arpeggiator)
-      * [Drone synth with 8 oscillators](#drone-synth-with-8-oscillators)
-      * [THX "Deep Note"](#thx-deep-note)
+   * [Examples](#examples)
 
 <!-- Added by: tod, at: Thu Jun  1 10:59:15 PDT 2023 -->
 
@@ -88,9 +86,9 @@ Thus, if you're getting started in the reference docs, the best place to start i
 If you're familiar with CircuitPython and synthesis, and want to dive in, there are larger
 [synthio-tricks examples](examples/) with wiring diagrams. In there you'll find:
 
-- [eighties_dystopia](eighties_dystopia/code.py) - A swirling ominous wub that evolves over time
-- [eighties_arp](eighties_arp/code.py) - An arpeggio explorer for non-musicians
-- [monosynth1](monosynth1/code.py) - A complete MIDI monosynth w/ adjustable filter
+- [eighties_dystopia](examples/eighties_dystopia/code.py) - A swirling ominous wub that evolves over time
+- [eighties_arp](examples/eighties_arp/code.py) - An arpeggio explorer for non-musicians
+- [monosynth1](examples/monosynth1/code.py) - A complete MIDI monosynth w/ adjustable filter
 
 
 
@@ -587,20 +585,16 @@ while True:
 
 ### Using LFO values in your own code
 
+[tbd]
+
 ### Using `synthio.Math` with `synthio.LFO`
+
+[tbd]
 
 ### Drum synthesis
 
+[tbd]
 
-## Example "Patches"
+### Examples
 
-### Arcade sounds
-
-### Bass synth arpeggiator
-
-### Drone synth with 8 oscillators
-
-### THX "Deep Note"
-
-
-###
+Larger [synthio-tricks examples](examples/) with wiring diagrams
