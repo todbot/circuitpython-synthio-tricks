@@ -59,7 +59,40 @@ CircuitPython Synthio Tricks
   - [Math blocks](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.Math)
      with [14 three-term Math operations](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.Math) to adjust LFO ranges, offsets, scales
   - Utility functions to easily convert from [MIDI note to frequency](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.midi_to_hz) or [V/Oct modular to frequency](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.voct_to_hz)
+  - Two-pole resonant low-pass (LPF) / high-pass (HPF) / band-pass (BPF) / notch filter, per-oscillator
   - Plugs into existing the [`AudioMixer`](https://docs.circuitpython.org/en/latest/shared-bindings/audiomixer/index.html) system for use alongside `audiocore.WaveFile` sample playing
+
+### How `synthio` differs from other synthesis systems
+
+Signal flow in traditional sythesis systems is "wired up" once
+(either physically with circuits or virtually with software components)
+and then controlled with various inputs.   For instance, one may create oscillator, filter, and
+amplifier objects, flowing audio from one to the other.
+You then twiddle these objects to, for example, adjust pitch and trigger filter and
+amplifier envelope generators.
+
+In `synthio`, the signal chain is re-created each time a note is triggered.
+The `synthio.Note` object is the holder of the oscillator (`note.waveform`),
+the filter (`note.filter`), the amplitude envelope (`note.envelope`), among others.
+
+In many cases, to change these features, you create new versions of them with different parameters,
+e.g.
+- `note.filter = synth.low_pass_filter(1200,1.3)` -- create a new LPF at 1200 Hz w/ 1.3 resonance
+- `note.envelope = synthio.Envelope(release_time=0.8)` -- create an envelope w/ 0.8 sec release time
+
+Thus, if you're getting started in the reference docs, the best place to start is
+[synthio.Note](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.Note).
+
+### Some examples
+
+If you're familiar with CircuitPython and synthesis, and want to dive in, there are larger
+[synthio-tricks examples](examples/) with wiring diagrams. In there you'll find:
+
+- [eighties_dystopia](eighties_dystopia/code.py) - A swirling ominous wub that evolves over time
+- [eighties_arp](eighties_arp/code.py) - An arpeggio explorer for non-musicians
+- [monosynth1](monosynth1/code.py) - A complete MIDI monosynth w/ adjustable filter
+
+
 
 ## Getting started
 
