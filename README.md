@@ -593,8 +593,18 @@ while True:
 
 ### Drum synthesis
 
-[tbd]
+[tbd, but check out [gamblor's drums.py gist](https://gist.github.com/gamblor21/15a430929abf0e10eeaba8a45b01f5a8)]
 
 ### Examples
 
-Larger [synthio-tricks examples](examples/) with wiring diagrams
+Here are some [larger synthio-tricks examples with wiring diagrams](examples/).
+
+
+### Troubleshooting
+
+
+#### Glitches when `code.py` is saved or CIRCUITPY drive access
+
+#### Distortion in audio
+
+####
