@@ -27,8 +27,9 @@ CircuitPython Synthio Tricks
          * [Wavetable morphing](#wavetable-morphing)
    * [Advanced Techniques](#advanced-techniques)
       * [Keeping track of pressed notes](#keeping-track-of-pressed-notes)
-      * [Turn WAV files info oscillators](#turn-wav-files-info-oscillators)
       * [Detuning oscillators for fatter sound](#detuning-oscillators-for-fatter-sound)
+      * [Turn WAV files info oscillators](#turn-wav-files-info-oscillators)
+      * [Using WAV wavetables](#using-wav-wavetables)
       * [Using LFO values in your own code](#using-lfo-values-in-your-own-code)
       * [Using synthio.Math with synthio.LFO](#using-synthiomath-with-synthiolfo)
       * [Drum synthesis](#drum-synthesis)
@@ -44,13 +45,13 @@ CircuitPython Synthio Tricks
    available since 8.2.0-beta0 and still in development!
 - Features:
   - Polyphonic (12 oscillator) & stereo, 16-bit, with adjustable sample rate
-  - Oscillators are wavetable-based, wtih real-time adjustable wavetables
+  - Oscillators are single-cycle waveform-based allowing for real-time adjustable wavetables
   - ADSR [amplitude envelope](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.Envelope) per oscillator
-  - Oscillator [ring modulation](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.Note.ring_frequency) w/ customizable ring oscillator wavetable
+  - Oscillator [ring modulation](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.Note.ring_frequency) w/ customizable ring oscillator waveform
   - Extensive [LFO system](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.LFO)
     - multiple LFOs per oscillator (amplitude, panning, pitch bend, ring mod)
     - LFOs can repeat or run once (becoming a kind of envelope)
-    - Each LFO can have a custom wavetable with linear interpolation
+    - Each LFO can have a custom waveform with linear interpolation
     - LFO outputs can be used by user code
     - LFOs can plug into one another
     - Customizable LFO wavetables and can be applied to your own code
@@ -500,6 +501,27 @@ while True:
 One of the coolest things about `synthio` being wavetable-based, is that we can alter the `waveform`
 _in real time_!
 
+Given the above setup but replacing the "while" loop, this will mix between the sine & square wave.
+
+```py
+[... setup from above ...]
+# mix between values a and b, works with numpy arrays too,  t ranges 0-1
+def lerp(a, b, t):  return (1-t)*a + t*b
+
+my_wave = np.zeros(SAMPLE_SIZE, dtype=np.int16)  # empty buffer we'll copy into
+note = synthio.Note( frequency=220, waveform=my_wave)
+synth.press(note)
+
+pos = 0
+while True:
+  print(pos)
+  my_wave[:] = lerp(wave_sine, wave_saw, pos)
+  pos += 0.01
+  if pos >=1: pos = 0
+  time.sleep(0.01)
+```
+
+
 ## Advanced Techniques
 
 
@@ -526,33 +548,6 @@ while True:
             syntho.release(note)
 ```
 
-
-### Turn WAV files info oscillators
-
-
-
-```py
-# orig from @jepler 31 May 2023 1:34p #circuitpython-dev/synthio
-import adafruit_wave
-
-# reads in entire wave
-def read_waveform(filename):
-    with adafruit_wave.open(filename) as w:
-        if w.getsampwidth() != 2 or w.getnchannels() != 1:
-            raise ValueError("unsupported format")
-        return memoryview(w.readframes(w.getnframes())).cast('h')
-
-# this verion lets you lerp() it to mix w/ another wave
-def read_waveform_ulab(filename):
-    with adafruit_wave.open(filename) as w:
-        if w.getsampwidth() != 2 or w.getnchannels() != 1:
-            raise ValueError("unsupported format")
-        return np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16)
-
-
-my_wave = read_waveform("AKWF_granular_0001.wav")
-
-```
 
 ### Detuning oscillators for fatter sound
 
@@ -582,6 +577,96 @@ while True:
     # increment number of detuned oscillators
     num_oscs = num_oscs+1 if num_oscs < 5 else 1
 ```
+
+
+### Turn WAV files info oscillators
+
+Thanks to [`adafruit_wave`](https://github.com/adafruit/Adafruit_CircuitPython_wave) it is really
+easy to load up a WAV file into a buffer and use it as a synthio waveform. Two great repositories of
+single-cycle waveforms are [AKWF FREE](https://www.adventurekid.se/akrt/waveforms/adventure-kid-waveforms/)
+and [waveeditonline.com](http://waveeditonline.com/)
+
+```py
+# orig from @jepler 31 May 2023 1:34p #circuitpython-dev/synthio
+import adafruit_wave
+
+# reads in entire wave
+def read_waveform(filename):
+    with adafruit_wave.open(filename) as w:
+        if w.getsampwidth() != 2 or w.getnchannels() != 1:
+            raise ValueError("unsupported format")
+        return memoryview(w.readframes(w.getnframes())).cast('h')
+
+# this verion lets you lerp() it to mix w/ another wave
+def read_waveform_ulab(filename):
+    with adafruit_wave.open(filename) as w:
+        if w.getsampwidth() != 2 or w.getnchannels() != 1:
+            raise ValueError("unsupported format")
+        return np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16)
+
+
+my_wave = read_waveform("AKWF_granular_0001.wav")
+
+```
+
+### Using WAV Wavetables
+
+The [waveeditonline.com](http://waveeditonline.com/) site has specially constructed WAV files
+called "wavetables" that contain 64 single-cycle waveforms, each waveform having 256 samples.
+The waveforms in a wavetable are usually harmonically-related, so scanning through them
+can produce interesting effects that could sound similar to using a filter,
+without needing to use `synth.filter`!
+
+The code below will load up one of these wavetables, and let you pick different
+waveforms within by setting `wavetable.set_wave_pos(n)`.
+
+```py
+import board, time, audiopwmio, synthio
+import ulab.numpy as np
+import adafruit_wave
+
+audio = audiopwmio.PWMAudioOut(board.GP10)
+synth = synthio.Synthesizer(sample_rate=22050)
+audio.play(synth)
+
+# mix between values a and b, works with numpy arrays too,  t ranges 0-1
+def lerp(a, b, t):  return (1-t)*a + t*b
+
+class Wavetable:
+    def __init__(self, filepath, wave_len=256):
+        self.w = adafruit_wave.open(filepath)
+        self.wave_len = wave_len  # how many samples in each wave
+        if self.w.getsampwidth() != 2 or self.w.getnchannels() != 1:
+            raise ValueError("unsupported WAV format")
+        self.waveform = np.zeros(wave_len, dtype=np.int16)  # empty buffer we'll copy into
+        self.num_waves = self.w.getnframes() / self.wave_len
+
+    def set_wave_pos(self, pos):
+        """Pick where in wavetable to be, morphing between waves"""
+        pos = min(max(pos, 0), self.num_waves-1)  # constrain
+        samp_pos = int(pos) * self.wave_len  # get sample position
+        self.w.setpos(samp_pos)
+        waveA = np.frombuffer(self.w.readframes(self.wave_len), dtype=np.int16)
+        self.w.setpos(samp_pos + self.wave_len)  # one wave up
+        waveB = np.frombuffer(self.w.readframes(self.wave_len), dtype=np.int16)
+        pos_frac = pos - int(pos)  # fractional position between wave A & B
+        self.waveform[:] = lerp(waveA, waveB, pos_frac) # mix waveforms A & B
+
+wavetable = Wavetable("BRAIDS02.WAV", 256) # from http://waveeditonline.com/index-17.html
+
+note = synthio.Note(frequency=220, waveform=wavetable.waveform)
+synth.press( note )  # start an oscillator going
+
+# scan through the wavetable, morphing through each one
+i=0
+di=0.1  # how fast to scan
+while True:
+    i = i + di
+    if i <=0 or i >= wavetable.num_waves: di = -di
+    wavetable.set_wave_pos(i)
+    time.sleep(0.001)
+```
+
 
 ### Using LFO values in your own code
 
