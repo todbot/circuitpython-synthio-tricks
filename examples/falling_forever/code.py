@@ -1,3 +1,4 @@
+
 # falling_forever_code.py -- you're falling... falling...
 # 26 Jul 2023 - @todbot / Tod Kurt
 #
@@ -50,15 +51,16 @@ class Wavetable:
         pos_frac = pos - int(pos)  # fractional position between wave A & B
         self.waveform[:] = lerp(waveA, waveB, pos_frac) # mix waveforms A & B
 
-wavetable1 = Wavetable("BRAIDS02.WAV") # from http://waveeditonline.com/index-17.html
-wavetable2 = Wavetable("HARMONIO.WAV") # from http://waveeditonline.com/index.html
+
+wavetable1 = Wavetable("wav/BRAIDS02.WAV") # from http://waveeditonline.com/index-17.html
+wavetable2 = Wavetable("wav/HARMONIO.WAV") # from http://waveeditonline.com/index.html
 
 lfo_wave_uz = np.array( (32767, 0), dtype=np.int16)  # start at max go to zero
 lfo_wave_dz = np.array( (-32767, 0), dtype=np.int16) # start at min go to zero
-plfo1 = synthio.LFO(rate=0.10, once=True, waveform=lfo_wave_uz)
-plfo2 = synthio.LFO(rate=0.10, once=True, waveform=lfo_wave_dz)
+plfo1 = synthio.LFO(rate=0.10, once=True, waveform=lfo_wave_dz)
+plfo2 = synthio.LFO(rate=0.10, once=True, waveform=lfo_wave_uz)
 note1 = synthio.Note(frequency=65.4, waveform=wavetable1.waveform, bend=plfo1)
-note2 = synthio.Note(frequency=65.4, waveform=wavetable2.waveform, bend=plfo2)
+note2 = synthio.Note(frequency=65.4, waveform=wavetable2.waveform, bend=plfo2, amplitude=0.7)
 synth.press( (note1,note2) )
 
 # scan through the wavetable, morphing through each one
@@ -74,4 +76,4 @@ while True:
 
     if plfo1.phase > 0.99:
         plfo1.retrigger()  # retrigger LFOs to start bends again
-        plfo2.retrigger()  # (we do this because synthio.LFO interpolates end->start too)
+        plfo2.retrigger()  # (we do this because synthio.LFO interpolates end->start too
