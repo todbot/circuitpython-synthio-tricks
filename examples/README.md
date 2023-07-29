@@ -24,3 +24,9 @@ synthio-tricks examples
   - wiring diagram:
 
     <img src="../imgs/monosynth1_bb.png" width=400>
+
+
+- [tiny_lfo_song](tiny_lfo_song/code.py) - a simple generative piece using only LFOs
+
+  - video demo: [tiny LFO song in CircuitPython synthio](https://www.youtube.com/watch?v=m_ALNCWXor0)
+  - also includes a version for the [PicoADK](https://github.com/DatanoiseTV/PicoADK-Hardware)
