@@ -30,3 +30,4 @@ synthio-tricks examples
 
   - video demo: [tiny LFO song in CircuitPython synthio](https://www.youtube.com/watch?v=m_ALNCWXor0)
   - also includes a version for the [PicoADK](https://github.com/DatanoiseTV/PicoADK-Hardware)
+  - also includes a version for the [Pimoroni PicoAudio Pack](https://shop.pimoroni.com/products/pico-audio-pack)
