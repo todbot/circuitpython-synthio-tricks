@@ -6,6 +6,8 @@ synthio-tricks examples
 - [eighties_dystopia](eighties_dystopia/code.py) - A swirling ominous wub that evolves over time
 
   - video demo: [eighties dystopia in synthio](https://www.youtube.com/watch?v=EcDqYh-DzVA)
+  - also includes a version for the [PicoADK](https://github.com/DatanoiseTV/PicoADK-Hardware)
+  - also includes a version for the [Pimoroni PicoAudio Pack](https://shop.pimoroni.com/products/pico-audio-pack)
   - wiring diagram:
 
     <img src="../imgs/eighties_dystopia_bb.png" width=400>
