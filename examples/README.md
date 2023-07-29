@@ -10,12 +10,11 @@ synthio-tricks examples
 
     <img src="../imgs/eighties_dystopia_bb.png" width=400>
 
-- [eighties_arp](eighties_arp/code.py) - An arpeggio explorer for non-musicians and test bed for my "Arpy" library
+- [tiny_lfo_song](tiny_lfo_song/code.py) - a simple generative piece using only LFOs
 
-  - video demo: [eighties arp in synthio](https://www.youtube.com/watch?v=noj92Ae0IQI)
-  - wiring diagram:
-
-    <img src="../imgs/eighties_arp_bb.png" width=400>
+  - video demo: [tiny LFO song in CircuitPython synthio](https://www.youtube.com/watch?v=m_ALNCWXor0)
+  - also includes a version for the [PicoADK](https://github.com/DatanoiseTV/PicoADK-Hardware)
+  - also includes a version for the [Pimoroni PicoAudio Pack](https://shop.pimoroni.com/products/pico-audio-pack)
 
 - [monosynth1](monosynth1/code.py) - A complete USB & Serial MIDI monosynth that responds to
   MIDI velocity and CCs, with adjustable filter, vibrato, release time. Great for basslines.
@@ -25,9 +24,9 @@ synthio-tricks examples
 
     <img src="../imgs/monosynth1_bb.png" width=400>
 
+- [eighties_arp](eighties_arp/code.py) - An arpeggio explorer for non-musicians and test bed for my "Arpy" library
 
-- [tiny_lfo_song](tiny_lfo_song/code.py) - a simple generative piece using only LFOs
+  - video demo: [eighties arp in synthio](https://www.youtube.com/watch?v=noj92Ae0IQI)
+  - wiring diagram:
 
-  - video demo: [tiny LFO song in CircuitPython synthio](https://www.youtube.com/watch?v=m_ALNCWXor0)
-  - also includes a version for the [PicoADK](https://github.com/DatanoiseTV/PicoADK-Hardware)
-  - also includes a version for the [Pimoroni PicoAudio Pack](https://shop.pimoroni.com/products/pico-audio-pack)
+    <img src="../imgs/eighties_arp_bb.png" width=400>
