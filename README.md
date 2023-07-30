@@ -25,6 +25,7 @@ CircuitPython Synthio Tricks
       * [Waveforms](#waveforms)
          * [Making your own waves](#making-your-own-waves)
          * [Wavetable morphing](#wavetable-morphing)
+      * [Filter modulation](#filter-modulation)
    * [Advanced Techniques](#advanced-techniques)
       * [Keeping track of pressed notes](#keeping-track-of-pressed-notes)
       * [Detuning oscillators for fatter sound](#detuning-oscillators-for-fatter-sound)
@@ -359,9 +360,10 @@ In synthesis, LFOs are often used to "automate" the knob twiddling one would do 
 automated twiddling you can imagine.
 
 The waveforms for `synthio.LFO` can be any waveform (even the same waveforms used for oscillators),
-and the default waveform is a sine wave.
+and the default waveform is a triangle wave, smoothly going from 0,1,0,-1,0.
 
-To show the flexibilty of LFOs, here's a quick non-sound exmaple that prints out three different LFOs.
+To show the flexibilty of LFOs, here's a quick non-sound exmaple that prints out three different LFOs,
+with custom waveforms.
 
 ```py
 # orig from @jepler 15 May 2023 11:23a in #circuitpython-dev/synthio
@@ -520,6 +522,68 @@ while True:
   if pos >=1: pos = 0
   time.sleep(0.01)
 ```
+
+#### Filter modulation
+
+To set a filter at a fixed frequency, set the `Note.filter` property using one of the `synthio.*_filter()` methods:
+
+```py
+frequency = 2000
+resonance = 1.5
+
+lpf = synthio.low_pass_filter(frequency,resonance)
+hpf = synthio.high_pass_filter(frequency,resonance)
+bpf = synthio.band_pass_filter(frequency,resonance)
+
+note1 = synth.Note(frequency=220, filter=lpf)
+note2 = synth.Note(frequency=330, filter=hpf)
+note3 = synth.Note(frequency=440, filter=bpf)
+```
+
+Note that making a filter is a complex operation, requiring a function,
+and you cannot set the properties of a resulting filter after its created.
+This makes modulating the filter a bit trickier.
+
+The standard synthio approach to modulation is to create a `synthio.LFO` and attach it to a property.
+(see above LFO examples)  The properties must be of type `synthio.BlockInput` for this to work, though.
+Not all synthio properties are `BlockInputs`, most notably, the `Note.filter` property.
+
+So one way to modulate a filter is to use Python:
+
+```py
+# fake a looping ramp down filter sweep
+fmin = 100
+fmax = 1000
+f = fmax
+note = synth.Note(frequency=220)
+synth.play(note)
+while True:
+  note.filter = synthio.low_pass_filter(f, 1.5)  # adjust note's filter
+  f = f - 10
+  if f < fmin: f = fmax
+  time.sleep(0.01)  # sleep determines our ramp rate
+```
+
+A more "synthio" way to modulate filter is to use an LFO but hand-copying LFO value to the filter.
+This requires adding the LFO to the
+[`synth.blocks`](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.Synthesizer.blocks)
+global runner since the LFO is not directly associated with a `Note`.
+
+```py
+fmin = 100
+fmax = 1000
+ramp_down = np.array( (32767,0), dtype=np.int16) # unpolar ramp down, when interpolated by LFO
+f_lfo = synth.LFO(rate=0.3, scale=fmax-fmin, offset=fmin, waveform=ramp_down)
+synth.blocks.append(f_lfo)  # add lfo to global LFO runner to get it to tick
+note = synth.Note(frequency=220)
+synth.play(note)  # start note sounding
+while True:
+  note.filter = synthio.low_pass_filter(f_lfo.value, 1.5) # adjust its filter
+  time.sleep(0.001)
+```
+
+This is a fairly advanced technique as it requires keeping track of the objects stuffed
+into `synth.blocks` so they can be removed later.
 
 
 ## Advanced Techniques
