@@ -90,7 +90,7 @@ Thus, if you're getting started in the reference docs, the best place to start i
 While `synthio` has extensive modulation capabilities, the signal flow is fixed. It is not a modular-style
 synthesis engine. Conceptually it is VCO->VCF->VCA and that cannot be changed.
 You cannot treat an oscillator as an LFO, nor can you use an LFO as an audio oscillator.
-(owever there is built-in ring modulation for multi-waveform mixing)
+(however there is built-in ring modulation for multi-waveform mixing)
 You cannot swap out the default 2-pole Biquad filter for a 4-pole Moog-style ladder filter emulation,
 and you cannot stack filters.
 But since each `synthio.Note` is its own entire signal chain, you can create interesting effects by creating
