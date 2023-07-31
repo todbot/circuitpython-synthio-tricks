@@ -140,9 +140,10 @@ Because there are many audio output methods, there are many different circuits.
 
 * Ready-made boards:
   The simplest will be ready-made boards, like
-  the [PicoADK](https://github.com/DatanoiseTV/PicoADK-Hardware),
-  the [Pimoroni Pico Audio Pack](https://shop.pimoroni.com/products/pico-audio-pack),
-  or the [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base).
+  - [PicoADK](https://github.com/DatanoiseTV/PicoADK-Hardware)
+  - [Pimoroni Pico Audio Pack](https://shop.pimoroni.com/products/pico-audio-pack)
+  - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base)
+
   These are all based on the I2S PCM5102 chip and use `audiobusio.I2SOut`.
 
 * Pico w/ RC filter and `audiopwmio.PWMAudioOut`
