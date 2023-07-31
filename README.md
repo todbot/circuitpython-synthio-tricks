@@ -6,6 +6,7 @@ CircuitPython Synthio Tricks
 <!--ts-->
    * [What is synthio?](#what-is-synthio)
       * [How synthio differs from other synthesis systems](#how-synthio-differs-from-other-synthesis-systems)
+      * [What synthio is not](#what-synthio-is-not)
       * [Some examples](#some-examples)
    * [Getting started](#getting-started)
       * [Which boards does synthio work on?](#which-boards-does-synthio-work-on)
@@ -25,6 +26,7 @@ CircuitPython Synthio Tricks
       * [Waveforms](#waveforms)
          * [Making your own waves](#making-your-own-waves)
          * [Wavetable morphing](#wavetable-morphing)
+      * [Filters](#filters)
       * [Filter modulation](#filter-modulation)
    * [Advanced Techniques](#advanced-techniques)
       * [Keeping track of pressed notes](#keeping-track-of-pressed-notes)
@@ -83,6 +85,18 @@ e.g.
 Thus, if you're getting started in the reference docs, the best place to start is
 [synthio.Note](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.Note).
 
+### What `synthio` is not
+
+While `synthio` has extensive modulation capabilities, the signal flow is fixed. It is not a modular-style
+synthesis engine. Conceptually it is VCO->VCF->VCA and that cannot be changed.
+You cannot treat an oscillator as an LFO, nor can you use an LFO as an audio oscillator.
+(owever there is built-in ring modulation for multi-waveform mixing)
+You cannot swap out the default 2-pole Biquad filter for a 4-pole Moog-style ladder filter emulation,
+and you cannot stack filters.
+But since each `synthio.Note` is its own entire signal chain, you can create interesting effects by creating
+multiple Notes at the same frequency but with different waveform, filter, amplitude, and modulation settings.
+
+
 ### Some examples
 
 If you're familiar with CircuitPython and synthesis, and want to dive in, there are larger
@@ -120,8 +134,16 @@ An I2S DAC board is the most widely supported, and highest quality.
 Even so, this guide will focus mostly on PWMAudioOut on Pico RP2040 because it's quick and simple,
 but any of the above will work.
 
-###  Audio out circuits
+###  Audio out hardware
 
+Because there are many audio output methods, there are many different circuits.
+
+* Ready-made boards:
+  The simplest will be ready-made boards, like
+  the [PicoADK](https://github.com/DatanoiseTV/PicoADK-Hardware),
+  the [Pimoroni Pico Audio Pack](https://shop.pimoroni.com/products/pico-audio-pack),
+  or the [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base).
+  These are all based on the I2S PCM5102 chip and use `audiobusio.I2SOut`.
 
 * Pico w/ RC filter and `audiopwmio.PWMAudioOut`
 
@@ -523,9 +545,14 @@ while True:
   time.sleep(0.01)
 ```
 
-#### Filter modulation
+#### Filters
 
-To set a filter at a fixed frequency, set the `Note.filter` property using one of the `synthio.*_filter()` methods:
+Filters let you change the character / timbre of the raw oscillator sound.
+The filter algorithm in `synthio` is a Biquad filter, giving a two-pole (12dB)
+low-pass (LP), high-pass (HP), or band-pass (BP) filters.
+
+To set a filter at a fixed frequency, set the `Note.filter` property
+using one of the `synthio.*_filter()` methods:
 
 ```py
 frequency = 2000
@@ -543,6 +570,11 @@ note3 = synth.Note(frequency=440, filter=bpf)
 Note that making a filter is a complex operation, requiring a function,
 and you cannot set the properties of a resulting filter after its created.
 This makes modulating the filter a bit trickier.
+
+Also note that currently there are some glitchy instabilties in the filter
+when resonance is 2 or greater and filter frequency is close to note frequency.
+
+#### Filter modulation
 
 The standard synthio approach to modulation is to create a `synthio.LFO` and attach it to a property.
 (see above LFO examples)  The properties must be of type `synthio.BlockInput` for this to work, though.
