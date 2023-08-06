@@ -1,5 +1,4 @@
-
-# falling_forever_code.py -- you're falling... falling...
+# falling_forever_i2s_code.py -- you're falling... falling...
 # 26 Jul 2023 - @todbot / Tod Kurt
 #
 # Demonstrate using wavetables to make interesting sounds.
@@ -15,17 +14,20 @@
 # External libraries needed:
 # - adafruit_wave  - circup install adafruit_wave
 #
-# Pins used on QTPY RP2040:
-# - board.SCK - Audio PWM output (needs RC filter output)
+# Pins used on Raspberry Pi Pico:
+# - GP9 - I2S BCK
+# - GP10 - I2S LRCK
+# - GP11 - IS2 DIN
 #
-# For an I2S version of this on Pico, see code_i2s.py
+# For a PWM version of this usig QTPy RP2040, see code.py
 #
 
-import board, time, audiopwmio, synthio
+import board, time, audiobusio, synthio
 import ulab.numpy as np
 import adafruit_wave
 
-audio = audiopwmio.PWMAudioOut(board.SCK)
+i2s_bclk, i2s_wsel, i2s_data = board.GP9, board.GP10, board.GP11
+audio = audiobusio. I2SOut(bit_clock=i2s_bclk, word_select=i2s_wsel, data=i2s_data)
 synth = synthio.Synthesizer(sample_rate=28672)  # 28 * 1024
 audio.play(synth)
 
