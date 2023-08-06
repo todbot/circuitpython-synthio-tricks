@@ -10,7 +10,10 @@ CircuitPython Synthio Tricks
       * [Some examples](#some-examples)
    * [Getting started](#getting-started)
       * [Which boards does synthio work on?](#which-boards-does-synthio-work-on)
-      * [Audio out circuits](#audio-out-circuits)
+      * [Audio out hardware](#audio-out-hardware)
+         * [Ready-made boards](#ready-made-boards)
+         * [RC filter and audiopwmio.PWMAudioOut](#rc-filter-and-audiopwmiopwmaudioout)
+         * [I2S stereo DAC](#i2s-stereo-dac)
       * [Play a note every second](#play-a-note-every-second)
       * [Play a chord](#play-a-chord)
       * [USB MIDI Input](#usb-midi-input)
@@ -138,7 +141,8 @@ but any of the above will work.
 
 Because there are many audio output methods, there are many different circuits.
 
-* Ready-made boards:
+#### Ready-made boards
+
   The simplest will be ready-made boards, like
   - [PicoADK](https://github.com/DatanoiseTV/PicoADK-Hardware)
   - [Pimoroni Pico Audio Pack](https://shop.pimoroni.com/products/pico-audio-pack)
@@ -146,9 +150,9 @@ Because there are many audio output methods, there are many different circuits.
 
   These are all based on the I2S PCM5102 chip and use `audiobusio.I2SOut`.
 
-* Pico w/ RC filter and `audiopwmio.PWMAudioOut`
+#### RC filter and `audiopwmio.PWMAudioOut`
 
-  THe Pico can output a mono sound using PWM (~10-bit resolution) with an RC-filter.
+  The Pico and some other chips can output sound using PWM (~10-bit resolution) with an RC-filter.
   (R1=1k, C1=100nF, [Sparkfun TRRS](https://www.sparkfun.com/products/11570))
 
   <img src="./imgs/synthio_pico_pwm_bb.jpg" width=500>
@@ -158,13 +162,26 @@ Because there are many audio output methods, there are many different circuits.
   See [here for a more complete RC filter circuit](https://www.youtube.com/watch?v=rwPTpMuvSXg).
 
 
-*  Pico w/ [I2S PCM5102](https://amzn.to/3MGOTJH) and `audiobusio.I2SOut`
+#### I2S stereo DAC
 
-   An I2S DAC board is capable of stereo CD-quality sound and they're very affordable.
-   The line out is also strong enough to drive many headphones too, but I usually feed
-   the output into a portable bluetooth speaker with line in.
+  An example I2S DAC is the [I2S PCM5102](https://amzn.to/3MGOTJH).
 
-      <img src="./imgs/synthio_pico_i2s_bb.jpg" width=500>
+  An I2S DAC board is capable of stereo CD-quality sound and they're very affordable.
+  The line out is also strong enough to drive many headphones too, but I usually feed
+  the output into a portable bluetooth speaker with line in.
+
+  <img src="./imgs/synthio_pico_i2s_bb.jpg" width=500>
+
+  Note that in addition to the three I2S signals:
+   - PCM5102 BCK pin = `bit_clock`,
+   - PCM5102 LRCK pin = `word_select`
+   - PCM5102 DIN pin = `data`
+
+  you will need to wire:
+   - PCM5102 SCK pin to GND
+
+  in addition to wiring up Vin & Gnd.  For more details,  check out
+  [this post on PCM5102 modules](https://todbot.com/blog/2023/05/16/cheap-stereo-line-out-i2s-dac-for-circuitpython-arduino-synths/).
 
 
 ### Play a note every second
