@@ -12,7 +12,7 @@ synthio-tricks examples
 
     <img src="../imgs/eighties_dystopia_bb.png" width=400>
 
-- [tiny_lfo_song](tiny_lfo_song/code.py) - a simple generative piece using only LFOs
+- [tiny_lfo_song](tiny_lfo_song/code.py) - A simple generative piece using only LFOs
 
   - video demo: [tiny LFO song in CircuitPython synthio](https://www.youtube.com/watch?v=m_ALNCWXor0)
   - also includes a version for the [PicoADK](https://github.com/DatanoiseTV/PicoADK-Hardware)
@@ -32,3 +32,10 @@ synthio-tricks examples
   - wiring diagram:
 
     <img src="../imgs/eighties_arp_bb.png" width=400>
+
+- [falling_forever](falling_forever/code.py) - Use morphing wavetables and LFOs to make weird sounds
+
+  - video demo: [falling_forever: playign with wavetables in CircuitPython](https://www.youtube.com/watch?v=V3454a47xIs)
+  - also includes a version for [Raspberry Pi Pico and I2S DAC](falling_forever/code_i2s.py)
+  - wiring diagram:
+    - for QTPy RP2040, same as "eighties_dystopia"
