@@ -18,7 +18,7 @@
 # Pins used on QTPY RP2040:
 # - board.SCK - Audio PWM output (needs RC filter output)
 #
-# For an I2S version of this on Pico, see code_i2s.py
+# For an I2S version of this using Pico and I2S DAC, see code_i2s.py
 #
 
 import board, time, audiopwmio, synthio

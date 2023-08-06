@@ -19,7 +19,7 @@
 # - GP10 - I2S LRCK
 # - GP11 - IS2 DIN
 #
-# For a PWM version of this usig QTPy RP2040, see code.py
+# For a PWM version of this using QTPy RP2040 and PWM audio, see code.py
 #
 
 import board, time, audiobusio, synthio

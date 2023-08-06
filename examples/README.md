@@ -38,4 +38,4 @@ synthio-tricks examples
   - video demo: [falling_forever: playign with wavetables in CircuitPython](https://www.youtube.com/watch?v=V3454a47xIs)
   - also includes a version for [Raspberry Pi Pico and I2S DAC](falling_forever/code_i2s.py)
   - wiring diagram:
-    - for QTPy RP2040, same as "eighties_dystopia"
+    - for QTPy RP2040 PWM version, same as "eighties_dystopia"
