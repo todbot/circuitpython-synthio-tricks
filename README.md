@@ -545,6 +545,11 @@ _in real time_!
 
 Given the above setup but replacing the "while" loop, this will mix between the sine & square wave.
 
+The trick here is that we give the `synthio.Note` object an initial empty waveform buffer
+and then instead of replacing that buffer with `note.waveform = some_wave` we copy with `note.waveform[:] = some_wave`.
+
+(This avoids needing an additional `np.int16` result buffer for `lerp()`, since lerp-ing results in a `np.float32` array)
+
 ```py
 [... hardware setup from above ...]
 # create sine & sawtooth single-cycle waveforms to act as oscillators
@@ -557,7 +562,7 @@ wave_saw = np.linspace(SAMPLE_VOLUME, -SAMPLE_VOLUME, num=SAMPLE_SIZE, dtype=np.
 # mix between values a and b, works with numpy arrays too,  t ranges 0-1
 def lerp(a, b, t):  return (1-t)*a + t*b
 
-wave_empty = np.zeros(SAMPLE_SIZE, dtype=np.int16)  # empty buffer we'll copy into
+wave_empty = np.zeros(SAMPLE_SIZE, dtype=np.int16)  # empty buffer we'll use array slice copy "[:]" on
 note = synthio.Note( frequency=220, waveform=wave_empty)
 synth.press(note)
 
