@@ -546,12 +546,19 @@ _in real time_!
 Given the above setup but replacing the "while" loop, this will mix between the sine & square wave.
 
 ```py
-[... setup from above ...]
+[... hardware setup from above ...]
+# create sine & sawtooth single-cycle waveforms to act as oscillators
+SAMPLE_SIZE = 512
+SAMPLE_VOLUME = 32000  # 0-32767
+
+wave_sine = np.array(np.sin(np.linspace(0, 2*np.pi, SAMPLE_SIZE, endpoint=False)) * SAMPLE_VOLUME, dtype=np.int16)
+wave_saw = np.linspace(SAMPLE_VOLUME, -SAMPLE_VOLUME, num=SAMPLE_SIZE, dtype=np.int16)
+
 # mix between values a and b, works with numpy arrays too,  t ranges 0-1
 def lerp(a, b, t):  return (1-t)*a + t*b
 
-my_wave = np.zeros(SAMPLE_SIZE, dtype=np.int16)  # empty buffer we'll copy into
-note = synthio.Note( frequency=220, waveform=my_wave)
+wave_empty = np.zeros(SAMPLE_SIZE, dtype=np.int16)  # empty buffer we'll copy into
+note = synthio.Note( frequency=220, waveform=wave_empty)
 synth.press(note)
 
 pos = 0
