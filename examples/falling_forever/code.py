@@ -41,6 +41,7 @@ class Wavetable:
             raise ValueError("unsupported WAV format")
         self.waveform = np.zeros(wave_len, dtype=np.int16)  # empty buffer we'll copy into
         self.num_waves = self.w.getnframes() // self.wave_len
+        self.set_wave_pos(0)  # set initial position
 
     def set_wave_pos(self, pos):
         """Pick where in wavetable to be, morphing between waves"""
