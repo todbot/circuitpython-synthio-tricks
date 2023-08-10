@@ -11,8 +11,7 @@
 # - adafruit_midi  - circup install adafruit_midi
 #
 # Pins used on QTPY RP2040:
-# - board.SCK - Audio PWM output (needs RC filter output)
-#
+# - board.MOSI - Audio PWM output (needs RC filter output)
 #
 
 import board, time, audiopwmio, audiomixer, synthio
