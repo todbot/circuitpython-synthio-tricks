@@ -125,7 +125,7 @@ last_auto_play_time = 0
 auto_play_pos = -1
 def update_auto_play():
     global last_auto_play_time, auto_play_pos
-    if time.monotonic() - last_auto_play_time > auto_play_speed and auto_play:
+    if auto_play and time.monotonic() - last_auto_play_time > auto_play_speed:
        last_auto_play_time = time.monotonic()
        note_off( auto_play_notes[ auto_play_pos ] )
        auto_play_pos = (auto_play_pos + 3) % len(auto_play_notes)
@@ -138,10 +138,10 @@ set_wave_lfo_minmax(wave_lfo_min, wave_lfo_max)
 print("wavetable midisynth i2s. auto_play:",auto_play)
 
 while True:
-    msg = midi_usb.receive()
-
     update_synth()
     update_auto_play()
+
+    msg = midi_usb.receive()
 
     if isinstance(msg, NoteOn) and msg.velocity != 0:
         print("noteOn: ", msg.note, "vel=", msg.velocity)

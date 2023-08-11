@@ -15,8 +15,7 @@
 #
 
 import time, random
-import board, audiomixer, synthio
-import audiopwmio
+import board, audiopwmio, audiomixer, synthio
 import ulab.numpy as np
 import adafruit_wave
 
@@ -33,7 +32,7 @@ midi_channel = 1
 
 wavetable_fname = "wav/PLAITS02.WAV"  # from http://waveeditonline.com/index-17.html
 wavetable_sample_size = 256  # number of samples per wave in wavetable (256 is standard)
-sample_rate = 32000
+sample_rate = 25000
 wave_lfo_min = 10  # which wavetable number to start from
 wave_lfo_max = 25  # which wavetable number to go up to
 
@@ -77,7 +76,7 @@ class Wavetable:
 
 wavetable1 = Wavetable(wavetable_fname, wave_len=wavetable_sample_size)
 
-amp_env = synthio.Envelope(sustain_level=0.1, attack_time=0.05, release_time=0.3, decay_time=1)
+amp_env = synthio.Envelope(sustain_level=0.8, attack_time=0.05, release_time=0.3)
 wave_lfo = synthio.LFO(rate=0.1, waveform=np.array((0,32767), dtype=np.int16) )
 lpf = synth.low_pass_filter(4000, 1)  # cut some of the annoying harmonics
 
@@ -92,9 +91,9 @@ def note_on(notenum, vel=100):
         synth.release(oldnote)
 
     if not auto_play:
-        wave_lfo.retrigger()
+        wave_lfo.retrigger()   # retrigger the wavetable when playing over MIDI
 
-    f = synthio.midi_to_hz(notenum + random.uniform(-0.1,0.1) )
+    f = synthio.midi_to_hz(notenum) # + random.uniform(-0.1,0.1) )
     vibrato_lfo = synthio.LFO(rate=1, scale=0.01)
     note = synthio.Note( frequency=f, waveform=wavetable1.waveform,
                          envelope=amp_env, filter=lpf, bend=vibrato_lfo )
@@ -123,7 +122,7 @@ last_auto_play_time = 0
 auto_play_pos = -1
 def update_auto_play():
     global last_auto_play_time, auto_play_pos
-    if time.monotonic() - last_auto_play_time > auto_play_speed and auto_play:
+    if auto_play and time.monotonic() - last_auto_play_time > auto_play_speed:
        last_auto_play_time = time.monotonic()
        note_off( auto_play_notes[ auto_play_pos ] )
        auto_play_pos = (auto_play_pos + 3) % len(auto_play_notes)
@@ -133,18 +132,18 @@ def update_auto_play():
 
 set_wave_lfo_minmax(wave_lfo_min, wave_lfo_max)
 
-print("wavetable midisynth i2s. auto_play:",auto_play)
+print("wavetable midisynth. auto_play:",auto_play)
 
 while True:
-    msg = midi_usb.receive()
-
     update_synth()
     update_auto_play()
 
+    msg = midi_usb.receive()
+
     if isinstance(msg, NoteOn) and msg.velocity != 0:
-        print("noteOn: ", msg.note, "vel=", msg.velocity)
+        print("noteOn: ", msg.note, "v=", msg.velocity)
         note_on(msg.note, msg.velocity)
 
     elif isinstance(msg,NoteOff) or isinstance(msg,NoteOn) and msg.velocity==0:
-        print("noteOff:", msg.note, "vel=", msg.velocity)
+        print("noteOff:", msg.note, "v=", msg.velocity)
         note_off(msg.note, msg.velocity)
