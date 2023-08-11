@@ -33,6 +33,13 @@ synthio-tricks examples
 
     <img src="../imgs/eighties_arp_bb.png" width=400>
 
+- [wavetable_midisynth](wavetable_midisynth/code.py) - MIDI synth using morphing wavetables
+
+  - video demo: [wavetable_midisynth demo, a circuitpython-synthio-trick](https://www.youtube.com/watch?v=CrxaB_AVQqM)
+  - also includes a version for [Raspberry Pi Pico and I2S DAC](wavetable_midisynth/code_i2s.py)
+  - wiring diagram:
+    - for QTPy RP2040 PWM version, same as "eighties_dystopia"
+
 - [falling_forever](falling_forever/code.py) - Use morphing wavetables and LFOs to make weird sounds
 
   - video demo: [falling_forever: playign with wavetables in CircuitPython](https://www.youtube.com/watch?v=V3454a47xIs)
