@@ -37,6 +37,7 @@ synthio-tricks examples
 
   - video demo: [wavetable_midisynth demo, a circuitpython-synthio-trick](https://www.youtube.com/watch?v=CrxaB_AVQqM)
   - also includes a version for [Raspberry Pi Pico and I2S DAC](wavetable_midisynth/code_i2s.py)
+  - set `auto_play=True` if you don't have a MIDI keyboard and it'll play its own little tune
   - wiring diagram:
     - for QTPy RP2040 PWM version, same as "eighties_dystopia"
 
