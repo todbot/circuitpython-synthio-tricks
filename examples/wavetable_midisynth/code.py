@@ -24,20 +24,20 @@ from adafruit_midi.note_on import NoteOn
 from adafruit_midi.note_off import NoteOff
 
 midi_channel = 1
-wavetable_fname = "wav/PLAITS02.WAV" # from http://waveeditonline.com/index-17.html
-wavetable_sample_size = 256
+wavetable_fname = "wav/PLAITS02.WAV"  # from http://waveeditonline.com/index-17.html
+wavetable_sample_size = 256  # number of samples per wave in wavetable (256 is standard)
 sample_rate = 28000
-wave_lfo_min = 10
-wave_lfo_max = 25
+wave_lfo_min = 10  # which wavetable number to start from
+wave_lfo_max = 25  # which wavetable number to go up to
 
 midi_usb  = adafruit_midi.MIDI(midi_in=usb_midi.ports[0], in_channel=midi_channel-1)
 
 audio = audiopwmio.PWMAudioOut(board.MOSI)
 mixer = audiomixer.Mixer(buffer_size=4096, voice_count=1, sample_rate=sample_rate, channel_count=1,
                          bits_per_sample=16, samples_signed=True)
-audio.play(mixer) # attach mixer to audio playback
+audio.play(mixer)  # attach mixer to audio playback
 synth = synthio.Synthesizer(sample_rate=sample_rate)
-mixer.play(synth) # attach synth to mixer
+mixer.play(synth)  # attach synth to mixer
 
 # mix between values a and b, works with numpy arrays too,  t ranges 0-1
 def lerp(a, b, t):  return (1-t)*a + t*b
@@ -68,11 +68,11 @@ class Wavetable:
 
 wavetable1 = Wavetable(wavetable_fname, wave_len=wavetable_sample_size)
 
-amp_env = synthio.Envelope(sustain_level=0.8, attack_time=0.03, release_time=0.4)
+amp_env = synthio.Envelope(sustain_level=0.8, attack_time=0.03, release_time=0.3)
 wave_lfo = synthio.LFO(rate=0.1, waveform=np.array((0,32767), dtype=np.int16) )
 lpf = synth.low_pass_filter(4000, 0.5)  # cut some of the annoying harmonics
 
-synth.blocks.append(wave_lfo)  # attach wavelfo to global lfo runner since not attached to note
+synth.blocks.append(wave_lfo)  # attach wavelfo to global lfo runner since cannot attach to note
 
 notes_pressed = {}  # keys = midi note num, value = synthio.Note,
 
@@ -83,7 +83,9 @@ def note_on(notenum, vel):
         synth.release(oldnote)
 
     f = synthio.midi_to_hz(notenum)
-    note = synthio.Note( frequency=f, waveform=wavetable1.waveform, envelope=amp_env, filter=lpf )
+    vibrato_lfo = synthio.LFO(rate=1, scale=0.01)
+    note = synthio.Note( frequency=f, waveform=wavetable1.waveform,
+                         envelope=amp_env, filter=lpf, bend=vibrato_lfo )
     synth.press(note)
     notes_pressed[notenum] = note
 
@@ -97,7 +99,7 @@ def update_synth():
     # only update 100 times a sec to lighten the load
     if time.monotonic() - last_update_time > 0.01:
        last_update_time = time.monotonic()
-       print( wave_lfo.value )
+       print( "%.2f" % wave_lfo.value )
        wavetable1.set_wave_pos( wave_lfo.value )
 
 def set_wave_lfo_minmax(wmin, wmax):
@@ -107,7 +109,7 @@ def set_wave_lfo_minmax(wmin, wmax):
 
 set_wave_lfo_minmax(wave_lfo_min, wave_lfo_max)
 
-print("wavetable simplesynth")
+print("wavetable midisynth")
 
 while True:
     msg = midi_usb.receive()
