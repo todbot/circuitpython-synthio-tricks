@@ -1,4 +1,4 @@
-# wavetable_midisynth_code.py -- simple wavetable synth that responds to MIDI
+# wavetable_midisynth_code_i2s.py -- simple wavetable synth that responds to MIDI
 # 26 Jul 2023 - @todbot / Tod Kurt
 #
 # Demonstrate using wavetables to make a MIDI synth
@@ -16,7 +16,7 @@
 
 import time, random
 import board, audiomixer, synthio
-import audiopwmio
+import audiobusio
 import ulab.numpy as np
 import adafruit_wave
 
@@ -38,9 +38,11 @@ wave_lfo_min = 10  # which wavetable number to start from
 wave_lfo_max = 25  # which wavetable number to go up to
 
 # pin definitions
-audio_pwm_pin = board.MOSI
+i2s_bclk = board.GP9  # BCK on PCM5102 (be sure to connect PCM5102 SCK pin to Gnd)
+i2s_wsel = board.GP10 # LCK on PCM5102
+i2s_data = board.GP11 # DIN on PCM5102
 
-audio = audiopwmio.PWMAudioOut(audio_pwm_pin)
+audio = audiobusio. I2SOut(bit_clock=i2s_bclk, word_select=i2s_wsel, data=i2s_data)
 mixer = audiomixer.Mixer(buffer_size=4096, voice_count=1, sample_rate=sample_rate, channel_count=1,
                          bits_per_sample=16, samples_signed=True)
 audio.play(mixer)  # attach mixer to audio playback
