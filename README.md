@@ -585,12 +585,14 @@ To set a filter at a fixed frequency, set the `Note.filter` property
 using one of the `synthio.*_filter()` methods:
 
 ```py
+[ ... synthio setup as normal ...]
+
 frequency = 2000
 resonance = 1.5
 
-lpf = synthio.low_pass_filter(frequency,resonance)
-hpf = synthio.high_pass_filter(frequency,resonance)
-bpf = synthio.band_pass_filter(frequency,resonance)
+lpf = synth.low_pass_filter(frequency,resonance)
+hpf = synth.high_pass_filter(frequency,resonance)
+bpf = synth.band_pass_filter(frequency,resonance)
 
 note1 = synth.Note(frequency=220, filter=lpf)
 note2 = synth.Note(frequency=330, filter=hpf)
@@ -620,7 +622,7 @@ f = fmax
 note = synth.Note(frequency=220)
 synth.play(note)
 while True:
-  note.filter = synthio.low_pass_filter(f, 1.5)  # adjust note's filter
+  note.filter = synth.low_pass_filter(f, 1.5)  # adjust note's filter
   f = f - 10
   if f < fmin: f = fmax
   time.sleep(0.01)  # sleep determines our ramp rate
@@ -635,17 +637,21 @@ global runner since the LFO is not directly associated with a `Note`.
 fmin = 100
 fmax = 1000
 ramp_down = np.array( (32767,0), dtype=np.int16) # unpolar ramp down, when interpolated by LFO
+
 f_lfo = synth.LFO(rate=0.3, scale=fmax-fmin, offset=fmin, waveform=ramp_down)
 synth.blocks.append(f_lfo)  # add lfo to global LFO runner to get it to tick
+
 note = synth.Note(frequency=220)
 synth.play(note)  # start note sounding
+
 while True:
-  note.filter = synthio.low_pass_filter(f_lfo.value, 1.5) # adjust its filter
+  note.filter = synth.low_pass_filter(f_lfo.value, 1.5) # adjust its filter
   time.sleep(0.001)
 ```
 
-This is a fairly advanced technique as it requires keeping track of the objects stuffed
-into `synth.blocks` so they can be removed later.
+This is a fairly advanced technique as it requires keeping track of the LFO objects stuffed
+into `synth.blocks` so they can be removed later.  See "Keeping track of pressed notes" below for
+one technique for doing this.
 
 
 ## Advanced Techniques
@@ -653,15 +659,16 @@ into `synth.blocks` so they can be removed later.
 
 ### Keeping track of pressed notes
 
-When passing in `synthio.Note` objects instead of MIDI note numbers to `synth.press()`,  your code
-must remmeber that object so it can pass it into `synth.release()` to properly stop it playing.
-One way to do this is with a Python dict where the key is whatever your unique identifier is
+When passing `synthio.Note` objects to `synth.press()` instead of MIDI note numbers,
+your code must remmeber that `Note` object so it can pass it into `synth.release()` to stop it playing.
+
+One way to do this is with a Python dict, where the key is whatever your unique identifier is
 (e.g. MIDI note number here for simplicity) and the value is the note object.
 
 ```py
 
 # setup as before to get `synth` & `midi` objects
-notes_pressed = {}  # which notes currently being pressed, key=midi note, val=note object
+notes_pressed = {}  # which notes being pressed. key=midi note, val=note object
 while True:
     msg = midi.receive()
     if isinstance(msg, NoteOn) and msg.velocity != 0:  # NoteOn
