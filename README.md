@@ -24,6 +24,7 @@ CircuitPython Synthio Tricks
          * [Envelope for entire synth](#envelope-for-entire-synth)
          * [Using synthio.Note for per-note velocity envelopes](#using-synthionote-for-per-note-velocity-envelopes)
       * [LFOs](#lfos)
+         * [Printing LFO output](#printing-lfo-output)
          * [Vibrato: pitch bend with LFO](#vibrato-pitch-bend-with-lfo)
          * [Tremolo: volume change with LFO](#tremolo-volume-change-with-lfo)
       * [Waveforms](#waveforms)
@@ -399,8 +400,39 @@ In synthesis, LFOs are often used to "automate" the knob twiddling one would do 
 `synthio.LFO` is a flexible LFO system that can perform just about any kind of
 automated twiddling you can imagine.
 
-The waveforms for `synthio.LFO` can be any waveform (even the same waveforms used for oscillators),
-and the default waveform is a triangle wave, smoothly going from 0,1,0,-1,0.
+#### Printing LFO output
+
+The `synthio.LFO`s are also just a source of varying numbers and those numbers you can use
+as inputs to some parameter you want to vary. So you can just print them out!
+Here's the simplest way to use a `synthio.LFO`.
+
+```py
+import time, board, synthio, audiopwmio
+
+audio = audiopwmio.PWMAudioOut(board.GP10)
+synth = synthio.Synthesizer(sample_rate=22050)
+audio.play(synth)
+
+mylfo = synthio.LFO(rate=0.3, scale=1, offset=1)
+synth.blocks.append(mylfo)
+
+while True:
+    print(mylfo.value)
+    time.sleep(0.05)
+```
+
+(instead of hooking up the LFO to a `synthio.Note` object, we're having it run globally via the
+[`synth.blocks`](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.Synthesizer.blocks) feature)
+
+By default the waveform is a triangle and you can see the output of `mylfo.value`
+smoothly vary from 0 to 1 to 0 to -1 to 0, and so on.
+This means it has a range of 2. If you want just a positive triangle LFO going from 0 to 1 to 0,
+you should set `scale=0.5, offset=0.5`.
+
+
+The waveforms for `synthio.LFO` can be any waveform, even the same waveforms used for oscillators,
+but you can also use much smaller datasets to LFO because by default it will do interpolation
+between values for you.
 
 To show the flexibilty of LFOs, here's a quick non-sound exmaple that prints out three different LFOs,
 with custom waveforms.

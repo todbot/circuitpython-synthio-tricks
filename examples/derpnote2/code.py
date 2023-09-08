@@ -32,7 +32,7 @@ def read_waveform(filename, n=0, start=0):
         return memoryview(w.readframes(n)).cast('h')
 
 SAMPLE_SIZE = 256
-wave_saw = np.linspace(20000, -20000, num=SAMPLE_SIZE, dtype=np.int16)  # 20k gives us more headroom somehow
+wave_saw = np.linspace(32767, -32767, num=SAMPLE_SIZE, dtype=np.int16)
 wave_noise = np.array([random.randint(-32767, 32767) for i in range(SAMPLE_SIZE)], dtype=np.int16)
 wave_rampdown = np.linspace(32767, -32767, num=3, dtype=np.int16)  # for pitch LFO
 wave_rampup = np.linspace(-32767, 32767, num=3, dtype=np.int16)  # for pitch LFO
@@ -62,14 +62,14 @@ notesS1 = [random.uniform(note_start, note_start+12) for _ in range(num_oscs)]
 notesS2 = [random.uniform(note_start+30, note_start) for _ in range(num_oscs)]
 notesS3 = notes_deepnote[0:num_oscs]
 
-amp_env = synthio.Envelope(attack_time=0.5, release_time=3, sustain_level=0.85, attack_level=0.85)
+amp_env = synthio.Envelope(attack_time=0.5, release_time=3, sustain_level=0.75, attack_level=0.75)
 for i in range(num_oscs):
     lfos[i] = synthio.LFO(rate=0.0001,
                           scale=random.uniform(0.25,0.5),
                           phase_offset=random.random(),
                           waveform=wave_noise)
     notes[i] = synthio.Note( synthio.midi_to_hz(notesS1[i]),
-                             waveform=my_wave
+                             waveform=my_wave,
                              envelope=amp_env, bend=lfos[i])
 
 # stage 1 is static random chaos (as set above with random LFOs)
