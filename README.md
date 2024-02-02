@@ -586,7 +586,7 @@ and then instead of replacing that buffer with `note.waveform = some_wave` we co
 [... hardware setup from above ...]
 # create sine & sawtooth single-cycle waveforms to act as oscillators
 SAMPLE_SIZE = 512
-SAMPLE_VOLUME = 32000  # 0-32767
+SAMPLE_VOLUME = 4096  # 0-32767
 
 wave_sine = np.array(np.sin(np.linspace(0, 2*np.pi, SAMPLE_SIZE, endpoint=False)) * SAMPLE_VOLUME, dtype=np.int16)
 wave_saw = np.linspace(SAMPLE_VOLUME, -SAMPLE_VOLUME, num=SAMPLE_SIZE, dtype=np.int16)
@@ -601,7 +601,7 @@ synth.press(note)
 pos = 0
 while True:
   print(pos)
-  my_wave[:] = lerp(wave_sine, wave_saw, pos)
+  note.waveform[:] = lerp(wave_sine, wave_saw, pos)
   pos += 0.01
   if pos >=1: pos = 0
   time.sleep(0.01)
