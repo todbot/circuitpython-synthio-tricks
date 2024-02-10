@@ -116,6 +116,12 @@ If you're familiar with CircuitPython and synthesis, and want to dive in, there 
 
 ### Which boards does `synthio` work on?
 
+There's a good chance `synthio` works on your CircuitPython board. Some boards I like:
+- Adafruit QT Py RP2040 with `audiopwmio` and PWM circuit
+- Raspberry Pi Pico with `audiopwmio` and PWM circuit
+- Adafruit QT Py ESP32-S3 with `audiobusio` and PCM5102 I2S board
+- Lolin S2 Mini ESP32-S2 with `audiobusio` and PCM5102 I2S board
+
 Since `synthio` is built in to CircuitPython and CirPy has varying support on different boards,
 you will need to check your board's "Built-in modules avialble" section on
 [circuitpython.org/downloads](https://circuitpython.org/downloads).
@@ -144,12 +150,13 @@ Because there are many audio output methods, there are many different circuits.
 
 #### Ready-made boards
 
-  The simplest will be ready-made boards, like
+The simplest will be ready-made boards, like
   - [PicoADK](https://github.com/DatanoiseTV/PicoADK-Hardware)
   - [Pimoroni Pico Audio Pack](https://shop.pimoroni.com/products/pico-audio-pack)
   - [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base)
+  - [Adafruit Feather RP2040 Prop-Maker](https://www.adafruit.com/product/5768)
 
-  These are all based on the I2S PCM5102 chip and use `audiobusio.I2SOut`.
+These all have built in I2S DACs and use `audiobusio.I2SOut`.
 
 #### RC filter and `audiopwmio.PWMAudioOut`
 
@@ -196,9 +203,15 @@ import synthio
 # for PWM audio with an RC filter
 import audiopwmio
 audio = audiopwmio.PWMAudioOut(board.GP10)
+
 # for I2S audio with external I2S DAC board
 #import audiobusio
 #audio = audiobusio.I2SOut(bit_clock=board.GP11, word_select=board.GP12, data=board.GP10)
+
+# for I2S audio on Feather RP2040 Prop-Maker
+#extpwr_pin = digitalio.DigitalInOut(board.EXTERNAL_POWER)
+#extpwr_pin.switch_to_output(value=True)
+#audio = audiobusio.I2SOut(bit_clock=board.I2S_BIT_CLOCK, word_select=board.I2S_WORD_SELECT, data=board.I2S_DATA)
 
 synth = synthio.Synthesizer(sample_rate=22050)
 audio.play(synth)
@@ -551,7 +564,7 @@ synth = synthio.Synthesizer(sample_rate=22050)
 audio.play(synth)
 # create sine & sawtooth single-cycle waveforms to act as oscillators
 SAMPLE_SIZE = 512
-SAMPLE_VOLUME = 32000  # 0-32767
+    SAMPLE_VOLUME = 32000  # 0-32767
 wave_sine = np.array(np.sin(np.linspace(0, 2*np.pi, SAMPLE_SIZE, endpoint=False)) * SAMPLE_VOLUME, dtype=np.int16)
 wave_saw = np.linspace(SAMPLE_VOLUME, -SAMPLE_VOLUME, num=SAMPLE_SIZE, dtype=np.int16)
 
@@ -586,7 +599,7 @@ and then instead of replacing that buffer with `note.waveform = some_wave` we co
 [... hardware setup from above ...]
 # create sine & sawtooth single-cycle waveforms to act as oscillators
 SAMPLE_SIZE = 512
-SAMPLE_VOLUME = 4096  # 0-32767
+SAMPLE_VOLUME = 32000  # 0-32767
 
 wave_sine = np.array(np.sin(np.linspace(0, 2*np.pi, SAMPLE_SIZE, endpoint=False)) * SAMPLE_VOLUME, dtype=np.int16)
 wave_saw = np.linspace(SAMPLE_VOLUME, -SAMPLE_VOLUME, num=SAMPLE_SIZE, dtype=np.int16)
