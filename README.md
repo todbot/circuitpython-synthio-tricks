@@ -3,6 +3,15 @@
 CircuitPython Synthio Tricks
 ===============
 
+This is a small list of tricks and techniques I use for my experiments 
+in making synthesizers with [`synthio`](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html), and similar to my ["circuitpython-tricks"](https://github.com/todbot/circuitpython-tricks) page. 
+Some of the synths/boards I've made that can use these techniques:
+[`pico_touch_synth`](https://github.com/todbot/picotouch_synth), 
+[`qtpy_synth`](https://github.com/todbot/qtpy_synth), 
+[`pico_test_synth`](https://github.com/todbot/pico_test_synth), 
+[`macropadsynthplug`](https://github.com/todbot/macropadsynthplug). 
+Also check out the "larger-tricks" directory for other examples. 
+
 <!--ts-->
    * [What is synthio?](#what-is-synthio)
       * [How synthio differs from other synthesis systems](#how-synthio-differs-from-other-synthesis-systems)
