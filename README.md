@@ -36,6 +36,9 @@ Also check out the "larger-tricks" directory for other examples.
          * [Printing LFO output](#printing-lfo-output)
          * [Vibrato: pitch bend with LFO](#vibrato-pitch-bend-with-lfo)
          * [Tremolo: volume change with LFO](#tremolo-volume-change-with-lfo)
+      * [Pitch Bend / Portamento](#pitch-bend-portamento)
+         * [Pitch bend, by hand](#pitch-bend-by-hand)
+         * [Pitch bend, bend lfo](#pitch-bend-bend-lfo)
       * [Waveforms](#waveforms)
          * [Making your own waves](#making-your-own-waves)
          * [Wavetable morphing](#wavetable-morphing)
@@ -519,6 +522,7 @@ while True:
 
 ```
 
+
 #### Tremolo: volume change with LFO
 
 Similarly, we can create rhythmic changes in loudness with an LFO attached to `note.amplitude`.
@@ -549,6 +553,70 @@ while True:
     time.sleep(1)
 ```
 
+         
+### Pitch bend / Portamento
+
+Pitch bend, portamento, pitch glide, or glissando are all roughly equivalent in 
+synthesizers: a continuous smooth glide between two notes. While `synthio` doesn't
+provide this exact functionality, we can achieve the effect via a variety of means. 
+
+#### Pitch bend, by hand
+
+There are several different ways to glide the pitch from one note to another. 
+The most obvious way is to do it "by hand" by modifying the `note.frequency` property 
+over time. (orig from a [discussion w/@shion on mastodon](https://mastodon.social/@todbot/112610331112413354))
+
+```py
+# ... synthio audio set up as normal ...
+def bend_note(note, start_notenum, end_notenum, bend_time=3):
+    bend_steps = 100  # arbitrarily chosen
+    bend_deltat = bend_time / bend_steps
+    f = synthio.midi_to_hz(start_notenum)
+    for i in range(glide_steps):
+        slid_notenum = start_notenum + i*((end_notenum - start_notenum)/bend_steps)
+        note.frequency = synthio.midi_to_hz(slid_notenum)
+        time.sleep(bend_deltat)  # note the time.sleep()!
+
+while True:
+    note = synthio.Note(synthio.midi_to_hz(70))
+    synth.press(note)
+    note_glide(note, 70,30)
+    note_glide(note, 30,40, 0.1)
+    note_glide(note, 40,70, 0.1)
+    synth.release(note)
+```
+
+#### Pitch bend, bend lfo
+
+The above approach isn't very efficient. So far the best way I've found to do 
+pitch-bend is to use an LFO on the `note.bend` property, like with [vibrato](#vibrato-pitch-bend-with-lfo),
+but with a specially-constructed "line" LFO in one-shot mode. 
+
+```py
+# ... synthio audio set up as normal ...
+def bend_note(note, start_notenum, end_notenum, bend_time=1):
+    bend_amount = (end_notenum - start_notenum) / 12
+    # special two-point line LFO that goes from 0 to bend_amount
+    bend_lfo = synthio.LFO( waveform=np.linspace(-16384, 16383, num=2, dtype=np.int16),
+        rate=1/bend_time, scale=bend_amount, offset=bend_amount/2, once=True)
+    note.bend = bend_lfo
+
+start_notenum = 40  # E2
+end_notenum = 52  # E3
+while True:
+    print("start:", start_notenum, "end:", end_notenum)
+    note = synthio.Note(synthio.midi_to_hz(start_notenum), panning=0 )
+    synth.press(note)
+    time.sleep(2)
+    bend_note(note, start_notenum, end_notenum, 0.75)
+    synth.release(note)
+    time.sleep(1)
+    start_notenum = end_notenum
+    end_notenum = random.randint(22,64)
+```
+Note that in addition to passing in the start note number to `synthio.Note()`, 
+we must pass in the start note number and end MIDI note number to `bend_note()`.
+
 
 ### Waveforms
 
@@ -573,7 +641,7 @@ synth = synthio.Synthesizer(sample_rate=22050)
 audio.play(synth)
 # create sine & sawtooth single-cycle waveforms to act as oscillators
 SAMPLE_SIZE = 512
-    SAMPLE_VOLUME = 32000  # 0-32767
+SAMPLE_VOLUME = 32000  # 0-32767
 wave_sine = np.array(np.sin(np.linspace(0, 2*np.pi, SAMPLE_SIZE, endpoint=False)) * SAMPLE_VOLUME, dtype=np.int16)
 wave_saw = np.linspace(SAMPLE_VOLUME, -SAMPLE_VOLUME, num=SAMPLE_SIZE, dtype=np.int16)
 
