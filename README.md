@@ -591,6 +591,7 @@ while True:
 The above approach isn't very efficient. So far the best way I've found to do 
 pitch-bend is to use an LFO on the `note.bend` property, like with [vibrato](#vibrato-pitch-bend-with-lfo),
 but with a specially-constructed "line" LFO in one-shot mode. 
+For a demo of the below code, [see this post](https://mastodon.social/@todbot/112792760148292105).
 
 ```py
 # ... synthio audio set up as normal ...
