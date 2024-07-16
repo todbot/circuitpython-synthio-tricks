@@ -612,7 +612,7 @@ while True:
     bend_note(note, start_notenum, end_notenum, 0.75)
     synth.release(note)
     time.sleep(1)
-    start_notenum = end_notenum
+    start_notenum = end_notenum  # save end note so we can pick new end note
     end_notenum = random.randint(22,64)
 ```
 Note that in addition to passing in the start note number to `synthio.Note()`, 
