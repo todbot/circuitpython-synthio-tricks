@@ -596,6 +596,7 @@ For a demo of the below code, [see this post](https://mastodon.social/@todbot/11
 ```py
 # ... synthio audio set up as normal ...
 def bend_note(note, start_notenum, end_notenum, bend_time=1):
+    note.frequency = synthio.midi_to_hz(start_notenum)
     bend_amount = (end_notenum - start_notenum) / 12
     # special two-point line LFO that goes from 0 to bend_amount
     bend_lfo = synthio.LFO( waveform=np.linspace(-16384, 16383, num=2, dtype=np.int16),
