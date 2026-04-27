@@ -14,7 +14,7 @@ Some of the synths/boards I've made that can use these techniques:
 Also check out the ["examples"](./examples) directory for larger examples. 
 
 For a more lesson-based approach, with 
-[videos for every lesson](https://youtu.be/dDN38qjhgMM?si=Zwp0hW4rmx3v6H6J),
+[videos for every lesson](https://youtu.be/dDN38qjhgMM?si=Zwp0hW4rmx3v6H6J),<br/>
 see the [CircuitPython_Synthio_Tutorial](https://todbot.github.io/CircuitPython_Synthio_Tutorial/).
 
 <!--ts-->
