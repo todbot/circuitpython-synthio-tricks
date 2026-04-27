@@ -12,6 +12,8 @@ Some of the synths/boards I've made that can use these techniques:
 [`macropadsynthplug`](https://github.com/todbot/macropadsynthplug). 
 Also check out the ["examples"](./examples) directory for larger examples. 
 
+And for a more lesson-based approach, see the [CircuitPython_Synthio_Tutorial](https://todbot.github.io/CircuitPython_Synthio_Tutorial/).
+
 <!--ts-->
    * [What is synthio?](#what-is-synthio)
       * [How synthio differs from other synthesis systems](#how-synthio-differs-from-other-synthesis-systems)
