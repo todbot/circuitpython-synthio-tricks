@@ -10,7 +10,7 @@ Some of the synths/boards I've made that can use these techniques:
 [`qtpy_synth`](https://github.com/todbot/qtpy_synth), 
 [`pico_test_synth`](https://github.com/todbot/pico_test_synth), 
 [`macropadsynthplug`](https://github.com/todbot/macropadsynthplug). 
-Also check out the "larger-tricks" directory for other examples. 
+Also check out the ["examples"](./examples) directory for larger examples. 
 
 <!--ts-->
    * [What is synthio?](#what-is-synthio)
