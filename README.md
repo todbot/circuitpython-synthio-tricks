@@ -10,9 +10,10 @@ Some of the synths/boards I've made that can use these techniques:
 [`qtpy_synth`](https://github.com/todbot/qtpy_synth), 
 [`pico_test_synth`](https://github.com/todbot/pico_test_synth), 
 [`macropadsynthplug`](https://github.com/todbot/macropadsynthplug). 
+
 Also check out the ["examples"](./examples) directory for larger examples. 
 
-And for a more lesson-based approach, see the [CircuitPython_Synthio_Tutorial](https://todbot.github.io/CircuitPython_Synthio_Tutorial/).
+For a more lesson-based approach, see the [CircuitPython_Synthio_Tutorial](https://todbot.github.io/CircuitPython_Synthio_Tutorial/).
 
 <!--ts-->
    * [What is synthio?](#what-is-synthio)
